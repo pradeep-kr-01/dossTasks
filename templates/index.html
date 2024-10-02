@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Capture with Filters</title>
+    <style>
+        /* Importing fonts for beautiful typography */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@400;500&display=swap');
+
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f8f9fa; /* Light background color */
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            align-items: center; /* Center vertically */
+            background-color: #000000; /* Light background color */
+            padding: 10px 20px; /* Padding for spacing */
+            box-shadow: 0 2px 4px rgb(255, 255, 255); /* Subtle shadow */
+            transition: background-color 0.3s; /* Smooth transition */
+        }
+
+        header:hover {
+            background-color: #e9ecef; /* Change background on hover */
+        }
+
+        header img {
+            margin-right: 15px; /* Space between image and title */
+            transition: transform 0.3s; /* Smooth image scale on hover */
+        }
+
+        header img:hover {
+            transform: scale(1.1); /* Scale image on hover */
+        }
+        header h1 {
+            font-size: 42px; /* Font size */
+            color: #c20606; /* Dark text color */
+            margin: 0; /* Remove default margin */
+        }
+
+        header h2 {
+            font-size: 20px; /* Font size for h2 */
+            color: #464a4e; /* Gray color for h2 */
+            margin: 0; /* Remove default margin */
+        }
+
+        /* Footer styling */
+        footer {
+            width: 100%;
+            background-color: #000000;
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #e1e1e1;
+            margin-top: 20px;
+        }
+
+        footer p {
+            color: #c20606;
+            font-size: 14px;
+        }
+
+        #videoElement {
+            width: 640px;
+            height: 480px;
+            border: 4px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Initial shadow */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Added box-shadow transition */
+        }
+
+        #videoElement:hover {
+            transform: scale(1.05); /* Slight zoom effect on hover */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Shadow effect on hover */
+        }
+
+        /* Optional: Add active state for better interaction */
+        #videoElement:active {
+            transform: scale(0.95); /* Slight shrink effect on click */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Reset shadow when clicked */
+        }
+
+        /* Styling for filter buttons */
+        .filters a {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 20px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            text-decoration: none;
+            background-color: #f0f0f0;
+            color: #333;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .filters a:hover {
+            background-color: #333;
+            color: white;
+            transform: translateY(-5px);  /* Slight lifting effect on hover */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Button hover animations */
+        button {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #feffff;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hover effect */
+        button:hover {
+            background-color: #0401bb;
+            color: #fff;  /* Change text color on hover */
+            transform: translateY(-5px);  /* Slight lifting effect on hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Active effect */
+        button:active {
+            background-color: #ffffff;
+            transform: translateY(0);  /* Reset the lifting effect */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Focus effect for accessibility */
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 66, 255, 0.5);  /* Focus ring */
+        }
+
+        /* Adding keyframe animations for fun */
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 10px #4CAF50, 0 0 20px #4CAF50;
+            }
+            50% {
+                box-shadow: 0 0 20px #4CAF50, 0 0 40px #4CAF50;
+            }
+            100% {
+                box-shadow: 0 0 10px #4CAF50, 0 0 20px #4CAF50;
+            }
+        }
+
+        /* Apply glow animation to the capture and upload button */
+        button.glow {
+            animation: glow 1.5s infinite ease-in-out;
+        }
+
+        /* Add more button styles if needed */
+        button.secondary {
+            background-color: #f0f0f0;
+        }
+
+        button.secondary:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* General body styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient( #0452c7,#cacccf,#e0e0e0);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+        p {
+            font-size: 2rem;
+            margin-bottom: auto;
+            color: #c20606;
+        }
+
+        .filters {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Styling the container to center content */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+            </style>
+        </head>
+        <body>
+            <header>
+                <img src="https://share1.cloudhq-mkt3.net/24ef05d88f6909.png" alt="Logo" width="96" height="96">
+                <h1>DOSS MEDIATECH (OPC) PRIVATE LIMITED</h1>
+                
+            </header>
+            
+        <h1>Capture Image With  & DataBase</h1>
+            
+            <!-- Video Stream for capturing image -->
+            <video id="video" autoplay></video>
+
+            <!-- Filter Buttons -->
+            <div id="filters">
+                <br><br> <button class="filter-btn" data-filter="none">None</button>
+                <button class="filter-btn" data-filter="grayscale">Grayscale</button>
+                <button class="filter-btn" data-filter="sepia">Sepia</button>
+                <button class="filter-btn" data-filter="invert">Invert</button>
+                <button class="filter-btn" data-filter="blur">Blur</button>
+            </div>
+
+            <!-- Capture and Submit Buttons -->
+            <br><button id="capture-btn">Capture Image</button><br>
+            <button id="submit-btn">Upload Image</button>
+
+            <!-- Display Captured Image -->
+            <canvas id="captured-image"></canvas>
+
+            <!-- Display Loading Text when Submitting -->
+            <p id="loading-text">Submitting your image to S3...</p>
+
+            
+
+            <script>
+                const video = document.getElementById('video');
+                const captureBtn = document.getElementById('capture-btn');
+                const submitBtn = document.getElementById('submit-btn');
+                const canvas = document.getElementById('captured-image');
+                const loadingText = document.getElementById('loading-text');
+                const filters = document.querySelectorAll('.filter-btn');
+                let currentFilter = 'none';
+                let capturedImageData;
+
+                // Get video stream from webcam
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        video.srcObject = stream;
+                    })
+                    .catch(err => {
+                        console.error('Error accessing webcam: ', err);
+                    });
+
+                // Apply selected filter to the video stream
+                filters.forEach(filterBtn => {
+                    filterBtn.addEventListener('click', () => {
+                        currentFilter = filterBtn.getAttribute('data-filter');
+                        video.style.filter = getCSSFilter(currentFilter);
+                    });
+                });
+
+                // Capture the image from the video stream
+                captureBtn.addEventListener('click', () => {
+                    const context = canvas.getContext('2d');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.filter = getCSSFilter(currentFilter);  // Apply filter to the canvas
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    canvas.style.display = 'block';
+                    capturedImageData = canvas.toDataURL('image/png');  // Capture image data in base64
+                });
+
+                // Submit the captured image to the backend for S3 storage
+                submitBtn.addEventListener('click', () => {
+                    if (!capturedImageData) {
+                        alert('Please capture an image first.');
+                        return;
+                    }
+                    
+                    loadingText.style.display = 'block';  // Show loading text
+
+                    fetch('/save_image', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ image: capturedImageData })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        loadingText.style.display = 'none';  // Hide loading text
+                        alert(data.message);
+                        loadStoredImages();  // Refresh stored images after uploading
+                    })
+                    .catch(error => {
+                        loadingText.style.display = 'none';  // Hide loading text
+                        console.error('Error submitting image: ', error);
+                    });
+                });
+
+                // Load stored images from S3
+                function loadStoredImages() {
+                    fetch('/get_images')
+                        .then(response => response.json())
+                        .then(data => {
+                            const storedImagesDiv = document.getElementById('stored-images');
+                            storedImagesDiv.innerHTML = '';  // Clear previous images
+
+                            // Display each stored image
+                            data.images.forEach(imageUrl => {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = imageUrl;
+                                storedImagesDiv.appendChild(imgElement);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error loading stored images: ', error);
+                        });
+                }
+
+                // Helper function to get CSS filter string based on filter type
+                function getCSSFilter(filterType) {
+                    switch (filterType) {
+                        case 'grayscale':
+                            return 'grayscale(100%)';
+                        case 'sepia':
+                            return 'sepia(100%)';
+                        case 'invert':
+                            return 'invert(100%)';
+                        case 'blur':
+                            return 'blur(5px)';
+                        default:
+                            return 'none';
+                    }
+                }
+
+                // Load stored images on page load
+                window.onload = loadStoredImages;
+    </script>
+
+        <!-- Footer Section -->
+        <footer>
+            <p>© 2024 Abhijeet Dwivedi - All Rights Reserved</p>
+        </footer>
+
+</body>
+</html>
