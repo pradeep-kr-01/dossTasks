@@ -1,0 +1,14 @@
+version: 1
+
+services:
+  - type: web
+    name: filtercamera
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    autoDeploy: true
+    region: oregon  # or another available region
+    instances: 1
+    healthCheckPath: /  # Path to check health
+
